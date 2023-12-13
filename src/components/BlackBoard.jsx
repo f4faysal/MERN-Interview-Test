@@ -75,7 +75,6 @@ function BlackBoard() {
 
     elements.forEach(({ roughElement }) => {
       context.globalAlpha = "1";
-      //console.log(roughElement);
       context.strokeStyle = roughElement.options.stroke;
       roughCanvas.draw(roughElement);
     });
@@ -84,6 +83,20 @@ function BlackBoard() {
       context.clearRect(0, 0, canvas.width, canvas.height);
     };
   }, [popped, elements, path, width, toolType, shapeWidth]);
+
+  useEffect(() => {
+    // Load path and elements from localStorage
+    const storedPath = localStorage.getItem('path');
+    const storedElements = localStorage.getItem('elements');
+
+    if (storedPath) {
+      setPath(JSON.parse(storedPath));
+    }
+
+    if (storedElements) {
+      setElements(JSON.parse(storedElements));
+    }
+  }, []); // Empty dependency array to run only once on mount
 
   const updateElement = (
     index,
@@ -108,6 +121,9 @@ function BlackBoard() {
     const elementsCopy = [...elements];
     elementsCopy[index] = updatedElement;
     setElements(elementsCopy);
+
+    // Save updated elements to localStorage
+    localStorage.setItem('elements', JSON.stringify(elementsCopy));
   };
 
   const checkPresent = (clientX, clientY) => {
@@ -121,10 +137,13 @@ function BlackBoard() {
           clientX < point.clientX + 10 &&
           clientX > point.clientX - 10
         ) {
-          //console.log("Popped");
           newPath.splice(index, 1);
           setPopped(true);
           setPath(newPath);
+
+          // Save updated path to localStorage
+          localStorage.setItem('path', JSON.stringify(newPath));
+
           return;
         }
       });
@@ -137,10 +156,12 @@ function BlackBoard() {
         clientY >= ele.y1 &&
         clientY <= ele.y2
       ) {
-        console.log("Popped....");
         newElements.splice(index, 1);
         setPopped(true);
         setElements(newElements);
+
+        // Save updated elements to localStorage
+        localStorage.setItem('elements', JSON.stringify(newElements));
       }
     });
   };
@@ -206,6 +227,9 @@ function BlackBoard() {
 
         setElements((prevState) => [...prevState, element]);
         setSelectedElement(element);
+
+        // Save updated elements to localStorage
+        localStorage.setItem('elements', JSON.stringify([...elements, element]));
       }
     }
   };
@@ -288,6 +312,7 @@ function BlackBoard() {
       updateElement(id, x1, y1, x2, y2, type, shapeWidth, colorWidth.hex);
     }
   };
+
   const handleMouseUp = () => {
     if (action === "resize") {
       const index = selectedElement.id;
@@ -305,17 +330,14 @@ function BlackBoard() {
       context.closePath();
       const element = points;
       setPoints([]);
-      setPath((prevState) => [...prevState, element]); //tuple
+      setPath((prevState) => [...prevState, element]); // tuple
       setIsDrawing(false);
+
+      // Save updated path to localStorage
+      localStorage.setItem('path', JSON.stringify([...path, element]));
     }
     setAction("none");
   };
-
-
-  console.log("elements -->",elements)
-  console.log("path -->",path)
-
-
 
   return (
     <div>
@@ -331,8 +353,6 @@ function BlackBoard() {
         setShapeWidth={setShapeWidth}
       />
       <canvas
-
-      
         id="canvas"
         className="App"
         width={window.innerWidth}
@@ -355,4 +375,5 @@ function BlackBoard() {
     </div>
   );
 }
+
 export default BlackBoard;
