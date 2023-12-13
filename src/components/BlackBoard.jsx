@@ -1,5 +1,15 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import rough from "roughjs/bundled/rough.esm";
+
+import {
+     adjustElementCoordinates,
+     createElement,
+     cursorForPosition,
+     getElementAtPosition,
+     midPointBtw,
+     resizedCoordinates,
+} from "./element";
 import Swatch from "./Swatch";
 
 function BlackBoard() {
