@@ -58,11 +58,9 @@ export function createElement(id, x1, y1, x2, y2, type, width, strokeColor) {
     strokeColor,
   };
 }
-
 const nearPoint = (x, y, x1, y1, name) => {
   return Math.abs(x - x1) < 5 && Math.abs(y - y1) < 5 ? name : null;
 };
-
 const positionWithinElement = (x, y, element) => {
   const { type, x1, x2, y1, y2 } = element;
   if (type === "rectangle") {
@@ -83,10 +81,8 @@ const positionWithinElement = (x, y, element) => {
     return start || end || inside;
   }
 };
-
 const distance = (a, b) =>
   Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
-
 
 export const getElementAtPosition = (x, y, elements) => {
   return elements
@@ -113,7 +109,6 @@ export const adjustElementCoordinates = (element) => {
     }
   }
 };
-
 export const cursorForPosition = (position) => {
   switch (position) {
     case "tl":
@@ -128,7 +123,6 @@ export const cursorForPosition = (position) => {
       return "move";
   }
 };
-
 export const resizedCoordinates = (clientX, clientY, position, coordinates) => {
   const { x1, y1, x2, y2 } = coordinates;
   switch (position) {
@@ -146,7 +140,6 @@ export const resizedCoordinates = (clientX, clientY, position, coordinates) => {
       return null;
   }
 };
-
 
 export const midPointBtw = (p1, p2) => {
   return {

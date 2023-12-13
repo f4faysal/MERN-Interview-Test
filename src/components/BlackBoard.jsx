@@ -1,16 +1,17 @@
 /* eslint-disable no-unused-vars */
+
 import { useEffect, useState } from "react";
 import rough from "roughjs/bundled/rough.esm";
 
-import {
-     adjustElementCoordinates,
-     createElement,
-     cursorForPosition,
-     getElementAtPosition,
-     midPointBtw,
-     resizedCoordinates,
-} from "./element";
 import Swatch from "./Swatch";
+import {
+  adjustElementCoordinates,
+  createElement,
+  cursorForPosition,
+  getElementAtPosition,
+  midPointBtw,
+  resizedCoordinates,
+} from "./element";
 
 function BlackBoard() {
   const [points, setPoints] = useState([]);
@@ -60,6 +61,7 @@ function BlackBoard() {
         context.save();
       });
     };
+
     if (toolType === "eraser" && popped === true) {
       context.clearRect(0, 0, canvas.width, canvas.height);
       setPopped(false);
@@ -308,6 +310,10 @@ function BlackBoard() {
     }
     setAction("none");
   };
+
+
+  console.log("elements -->",elements)
+  console.log("path -->",path)
 
   return (
     <div>

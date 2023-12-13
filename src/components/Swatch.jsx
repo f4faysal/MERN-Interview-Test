@@ -1,5 +1,5 @@
-/* eslint-disable react/prop-types */
-import { styles } from "../theme/styles";
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */ import { styles } from "../theme/styles";
 import {
   Brush,
   Circle,
@@ -17,10 +17,10 @@ import { download } from "./download";
 export default function Swatch({
   toolType,
   setToolType,
-
+  width,
   setWidth,
   setElements,
-
+  setColorWidth,
   setPath,
   colorWidth,
   setShapeWidth,
