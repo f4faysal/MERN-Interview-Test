@@ -8,6 +8,32 @@ function BlackBoard() {
   const [action, setAction] = useState("none");
 
 
+  const updateElement = (
+     index,
+     x1,
+     y1,
+     x2,
+     y2,
+     toolType,
+     strokeWidth,
+     strokeColor
+   ) => {
+     const updatedElement = createElement(
+       index,
+       x1,
+       y1,
+       x2,
+       y2,
+       toolType,
+       strokeWidth,
+       strokeColor
+     );
+     const elementsCopy = [...elements];
+     elementsCopy[index] = updatedElement;
+     setElements(elementsCopy);
+   };
+ 
+
   const handleMouseDown = (e) => {
      const { clientX, clientY } = e;
      const canvas = document.getElementById("canvas");
@@ -99,9 +125,14 @@ function BlackBoard() {
  
   return (
     <div>
-     
-      <canvas
-        
+    <canvas
+        id="canvas"
+        className="App"
+        width={window.innerWidth}
+        height={window.innerHeight}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
         onTouchStart={(e) => {
           var touch = e.touches[0];
           handleMouseDown({ clientX: touch.clientX, clientY: touch.clientY });
@@ -110,7 +141,7 @@ function BlackBoard() {
           var touch = e.touches[0];
           handleMouseMove({ clientX: touch.clientX, clientY: touch.clientY });
         }}
-      
+        onTouchEnd={handleMouseUp}
       >
         Canvas
       </canvas>
