@@ -1,8 +1,6 @@
-
 import { useEffect, useState } from "react";
 import rough from "roughjs/bundled/rough.esm";
-
- 
+import Swatch from "./Swatch";
 
 function BlackBoard() {
   const [points, setPoints] = useState([]);
@@ -30,50 +28,50 @@ function BlackBoard() {
     context.save();
 
     const drawpath = () => {
-     path.forEach((stroke, index) => {
-       context.beginPath();
+      path.forEach((stroke, index) => {
+        context.beginPath();
 
-       stroke.forEach((point, i) => {
-         context.strokeStyle = point.newColour;
-         context.lineWidth = point.newLinewidth;
+        stroke.forEach((point, i) => {
+          context.strokeStyle = point.newColour;
+          context.lineWidth = point.newLinewidth;
 
-         var midPoint = midPointBtw(point.clientX, point.clientY);
+          var midPoint = midPointBtw(point.clientX, point.clientY);
 
-         context.quadraticCurveTo(
-           point.clientX,
-           point.clientY,
-           midPoint.x,
-           midPoint.y
-         );
-         context.lineTo(point.clientX, point.clientY);
-         context.stroke();
-       });
-       context.closePath();
-       context.save();
-     });
-   };
-   if (toolType === "eraser" && popped === true) {
-     context.clearRect(0, 0, canvas.width, canvas.height);
-     setPopped(false);
-   }
+          context.quadraticCurveTo(
+            point.clientX,
+            point.clientY,
+            midPoint.x,
+            midPoint.y
+          );
+          context.lineTo(point.clientX, point.clientY);
+          context.stroke();
+        });
+        context.closePath();
+        context.save();
+      });
+    };
+    if (toolType === "eraser" && popped === true) {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      setPopped(false);
+    }
 
-   const roughCanvas = rough.canvas(canvas);
+    const roughCanvas = rough.canvas(canvas);
 
-   if (path !== undefined) drawpath();
+    if (path !== undefined) drawpath();
 
-   context.lineWidth = shapeWidth;
+    context.lineWidth = shapeWidth;
 
-   elements.forEach(({ roughElement }) => {
-     context.globalAlpha = "1";
-     //console.log(roughElement);
-     context.strokeStyle = roughElement.options.stroke;
-     roughCanvas.draw(roughElement);
-   });
+    elements.forEach(({ roughElement }) => {
+      context.globalAlpha = "1";
+      //console.log(roughElement);
+      context.strokeStyle = roughElement.options.stroke;
+      roughCanvas.draw(roughElement);
+    });
 
-   return () => {
-     context.clearRect(0, 0, canvas.width, canvas.height);
-   };
- }, [popped, elements, path, width, toolType, shapeWidth]);
+    return () => {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+    };
+  }, [popped, elements, path, width, toolType, shapeWidth]);
 
   const updateElement = (
     index,
@@ -303,6 +301,17 @@ function BlackBoard() {
 
   return (
     <div>
+      <Swatch
+        toolType={toolType}
+        setToolType={setToolType}
+        width={width}
+        setWidth={setWidth}
+        setElements={setElements}
+        setColorWidth={setColorWidth}
+        setPath={setPath}
+        colorWidth={colorWidth}
+        setShapeWidth={setShapeWidth}
+      />
       <canvas
         id="canvas"
         className="App"
