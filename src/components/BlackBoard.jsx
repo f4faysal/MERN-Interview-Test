@@ -1,10 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function BlackBoard() {
   const [points, setPoints] = useState([]);
   const [path, setPath] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [elements, setElements] = useState([]);
+  const [action, setAction] = useState("none");
+  const [toolType, setToolType] = useState("pencil");
+  const [selectedElement, setSelectedElement] = useState(null);
+  const [colorWidth, setColorWidth] = useState({
+    hex: "#fff",
+    hsv: {},
+    rgb: {},
+  });
+  const [width, setWidth] = useState(1);
+  const [shapeWidth, setShapeWidth] = useState(1);
+  const [popped, setPopped] = useState(false);
+
+  useEffect(() => {
+    const canvas = document.getElementById("canvas");
+    const context = canvas.getContext("2d");
+    context.lineCap = "round";
+    context.lineJoin = "round";
+
+    context.save();
+  }, [elements]);
 
   const updateElement = (
     index,
