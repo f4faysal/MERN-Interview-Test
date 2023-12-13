@@ -24,6 +24,32 @@ function BlackBoard() {
     context.lineJoin = "round";
 
     context.save();
+
+    const drawpath = () => {
+     path.forEach((stroke, index) => {
+       context.beginPath();
+
+       stroke.forEach((point, i) => {
+         context.strokeStyle = point.newColour;
+         context.lineWidth = point.newLinewidth;
+
+         var midPoint = midPointBtw(point.clientX, point.clientY);
+
+         context.quadraticCurveTo(
+           point.clientX,
+           point.clientY,
+           midPoint.x,
+           midPoint.y
+         );
+         context.lineTo(point.clientX, point.clientY);
+         context.stroke();
+       });
+       context.closePath();
+       context.save();
+     });
+   };
+
+
   }, [elements]);
 
   const updateElement = (
