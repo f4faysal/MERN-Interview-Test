@@ -26,7 +26,40 @@ function BlackBoard() {
     setElements(elementsCopy);
   };
 
-  
+  const checkPresent = (clientX, clientY) => {
+     if (path === undefined) return;
+     var newPath = path;
+     path.forEach((stroke, index) => {
+       stroke.forEach((point, i) => {
+         if (
+           clientY < point.clientY + 10 &&
+           clientY > point.clientY - 10 &&
+           clientX < point.clientX + 10 &&
+           clientX > point.clientX - 10
+         ) {
+           //console.log("Popped");
+           newPath.splice(index, 1);
+           setPopped(true);
+           setPath(newPath);
+           return;
+         }
+       });
+     });
+     const newElements = elements;
+     newElements.forEach((ele, index) => {
+       if (
+         clientX >= ele.x1 &&
+         clientX <= ele.x2 &&
+         clientY >= ele.y1 &&
+         clientY <= ele.y2
+       ) {
+         console.log("Popped....");
+         newElements.splice(index, 1);
+         setPopped(true);
+         setElements(newElements);
+       }
+     });
+   };
 
   const handleMouseDown = (e) => {
     const { clientX, clientY } = e;
