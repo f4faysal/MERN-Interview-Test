@@ -315,6 +315,8 @@ function BlackBoard() {
   console.log("elements -->",elements)
   console.log("path -->",path)
 
+
+
   return (
     <div>
       <Swatch
@@ -329,6 +331,8 @@ function BlackBoard() {
         setShapeWidth={setShapeWidth}
       />
       <canvas
+
+      
         id="canvas"
         className="App"
         width={window.innerWidth}
