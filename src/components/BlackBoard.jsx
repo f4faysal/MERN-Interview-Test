@@ -1,4 +1,8 @@
+
 import { useEffect, useState } from "react";
+import rough from "roughjs/bundled/rough.esm";
+
+ 
 
 function BlackBoard() {
   const [points, setPoints] = useState([]);
@@ -48,9 +52,28 @@ function BlackBoard() {
        context.save();
      });
    };
+   if (toolType === "eraser" && popped === true) {
+     context.clearRect(0, 0, canvas.width, canvas.height);
+     setPopped(false);
+   }
 
+   const roughCanvas = rough.canvas(canvas);
 
-  }, [elements]);
+   if (path !== undefined) drawpath();
+
+   context.lineWidth = shapeWidth;
+
+   elements.forEach(({ roughElement }) => {
+     context.globalAlpha = "1";
+     //console.log(roughElement);
+     context.strokeStyle = roughElement.options.stroke;
+     roughCanvas.draw(roughElement);
+   });
+
+   return () => {
+     context.clearRect(0, 0, canvas.width, canvas.height);
+   };
+ }, [popped, elements, path, width, toolType, shapeWidth]);
 
   const updateElement = (
     index,
