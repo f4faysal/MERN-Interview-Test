@@ -34,6 +34,71 @@ function BlackBoard() {
    };
  
 
+   const handleMouseDown = (e) => {
+     const { clientX, clientY } = e;
+     const canvas = document.getElementById("canvas");
+     const context = canvas.getContext("2d");
+ 
+     if (toolType === "selection") {
+       const element = getElementAtPosition(clientX, clientY, elements);
+       if (element) {
+         const offsetX = clientX - element.x1;
+         const offsetY = clientY - element.y1;
+         setSelectedElement({ ...element, offsetX, offsetY });
+         if (element.position === "inside") {
+           setAction("moving");
+         } else {
+           setAction("resize");
+         }
+       }
+     } else if (toolType === "eraser") {
+       setAction("erasing");
+ 
+       checkPresent(clientX, clientY);
+     } else {
+       const id = elements.length;
+       if (toolType === "pencil" || toolType === "brush") {
+         setAction("sketching");
+         setIsDrawing(true);
+ 
+         const newColour = colorWidth.hex;
+         const newLinewidth = width;
+         const transparency = toolType === "brush" ? "0.1" : "1.0";
+         const newEle = {
+           clientX,
+           clientY,
+           newColour,
+           newLinewidth,
+           transparency,
+         };
+         setPoints((state) => [...state, newEle]);
+ 
+         context.strokeStyle = newColour;
+         context.lineWidth = newLinewidth;
+         context.lineCap = 5;
+         context.moveTo(clientX, clientY);
+         context.beginPath();
+       } else {
+         setAction("drawing");
+         const newColour = colorWidth.hex;
+         const newWidth = shapeWidth;
+         const element = createElement(
+           id,
+           clientX,
+           clientY,
+           clientX,
+           clientY,
+           toolType,
+           newWidth,
+           newColour
+         );
+ 
+         setElements((prevState) => [...prevState, element]);
+         setSelectedElement(element);
+       }
+     }
+   };
+
   const handleMouseDown = (e) => {
      const { clientX, clientY } = e;
      const canvas = document.getElementById("canvas");
