@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
+import React from "react";
 
- 
 export function Resize({ toolType, colorWidth }) {
   return (
     <svg
@@ -38,8 +38,6 @@ export function Line({ toolType, colorWidth }) {
     </svg>
   );
 }
-
-
 
 export function Circle({ toolType, colorWidth }) {
   return (
