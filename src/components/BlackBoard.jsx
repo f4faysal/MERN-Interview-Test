@@ -13,31 +13,48 @@ import {
   resizedCoordinates,
 } from "./element";
 
+// BlackBoard নামক একটি React ফাংশনাল কম্পোনেন্ট
 function BlackBoard() {
-  const [points, setPoints] = useState([]);
-  const [path, setPath] = useState([]);
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [elements, setElements] = useState([]);
-  const [action, setAction] = useState("none");
-  const [toolType, setToolType] = useState("pencil");
-  const [selectedElement, setSelectedElement] = useState(null);
+  // বিভিন্ন স্টেট ভেরিয়েবল
+  const [points, setPoints] = useState([]); // প্রতিটি পয়েন্টের তালিকা
+  const [path, setPath] = useState([]); // পথের তালিকা
+  const [isDrawing, setIsDrawing] = useState(false); // আপনার বর্তমান কি ধরনের আইটেম আপনি চেন্জ করতে চাচ্ছেন তা জানার জন্য এটি ব্যবহৃত হয়
+  const [elements, setElements] = useState([]); // আপনার একক এলিমেন্টের তালিকা
+  const [action, setAction] = useState("none"); // এটি নির্দেশ করে কোন ধরনের অ্যাকশান চলছে (যেমন: স্কেচ, মুভ, রিসাইজ, ইট্যারেশন)
+  const [toolType, setToolType] = useState("pencil"); // বর্তমান চয়নকৃত শক্তি বা ইনস্ট্রুমেন্ট (পেন্সিল, ব্রাশ, ইরেসার, ইট্যারেশন)
+  const [selectedElement, setSelectedElement] = useState(null); // বর্তমান চয়নকৃত এলিমেন্ট
   const [colorWidth, setColorWidth] = useState({
+    // রঙ এবং পাথরের চওড়ার জন্য রঙ
     hex: "#fff",
     hsv: {},
     rgb: {},
   });
-  const [width, setWidth] = useState(1);
-  const [shapeWidth, setShapeWidth] = useState(1);
-  const [popped, setPopped] = useState(false);
+  const [width, setWidth] = useState(1); // পেন্সিল বা ব্রাশ ব্রাশের প্রস্থ বা ইটার প্রস্থ
+  const [shapeWidth, setShapeWidth] = useState(1); // আইটেম এলিমেন্টের প্রস্থ (যেমন: রেক্ট্যাঙ্গুলার শেপ এর সর্কুলার)
+  const [popped, setPopped] = useState(false); // এটি দেখায় যে একটি এলিমেন্ট বা পয়েন্ট মুছে ফেলা হয়েছে
 
+  // কোড রেন্ডারিং এর জন্য useEffect
   useEffect(() => {
+    // ক্যানভাস এলিমেন্টের ইনিশিয়েশন
     const canvas = document.getElementById("canvas");
     const context = canvas.getContext("2d");
+    /* 
+  context.lineCap: এটি লাইনের শেষ (end) নির্দেশ করে। এটি তিনটি মান গ্রহণ করে:
+  "butt": লাইনের শেষটি স্থানানুযায়ী সাধারিত (default) হয়।
+  "round": লাইনের শেষটি একটি গোল বৃত্ত হয়।
+  "square": লাইনের শেষটি একটি বর্গাকৃতি হয়। 
+  */
     context.lineCap = "round";
+    /* context.lineJoin: এটি যখন দুটি লাইন মিলাতে (join) হয় তখন এটি কোণের নির্দেশ করে। এটি তিনটি মান গ্রহণ করে:
+"round": যখন দুটি লাইন মিলাতে হয়, সেখানে একটি গোল বৃত্ত তৈরি হয়।
+"bevel": দুটি লাইনের মিলনে একটি সমতল মুক্তাঙ্গ তৈরি হয়।
+"miter": এটি মুক্তাঙ্গ তৈরি হবে তখনই যখন context.miterLimit প্যারামিটারের  
+*/
     context.lineJoin = "round";
 
     context.save();
 
+    // এলিমেন্ট এবং পয়েন্টগুলি রেন্ডার করার জন্য ফাংশন
     const drawpath = () => {
       path.forEach((stroke, index) => {
         context.beginPath();
@@ -62,42 +79,48 @@ function BlackBoard() {
       });
     };
 
+    // ইরেসার টুল চলার সময় ক্যানভাস মুছে ফেলুন
     if (toolType === "eraser" && popped === true) {
       context.clearRect(0, 0, canvas.width, canvas.height);
       setPopped(false);
     }
 
+    // rough লাইব্রেরি ব্যবহার করে স্কেচ এলিমেন্ট রেন্ডার করুন
     const roughCanvas = rough.canvas(canvas);
 
     if (path !== undefined) drawpath();
 
     context.lineWidth = shapeWidth;
 
+    // এলিমেন্টগুলি রেন্ডার করুন
     elements.forEach(({ roughElement }) => {
       context.globalAlpha = "1";
       context.strokeStyle = roughElement.options.stroke;
       roughCanvas.draw(roughElement);
     });
 
+    // useEffect এর জন্য একটি রিটার্ন ফাংশন, ক্লীন আপের জন্য
     return () => {
       context.clearRect(0, 0, canvas.width, canvas.height);
     };
   }, [popped, elements, path, width, toolType, shapeWidth]);
 
+  // কোড রেন্ডারিং এর জন্য আরও একটি useEffect
   useEffect(() => {
-    // Load path and elements from localStorage
-    const storedPath = localStorage.getItem('path');
-    const storedElements = localStorage.getItem('elements');
+    // localStorage থেকে path এবং elements লোড করুন
+    const storedPath = localStorage.getItem("path");
+    const storedElements = localStorage.getItem("elements");
 
-    if (storedPath) {
+    if (storedPath ) {
       setPath(JSON.parse(storedPath));
     }
 
-    if (storedElements) {
+    if (storedElements ) {
       setElements(JSON.parse(storedElements));
     }
-  }, []); // Empty dependency array to run only once on mount
+  }, []); // মাউন্ট সময় একবারই চালানোর জন্য খালি ডিপেন্ডেন্সি অ্যারে
 
+  // এলিমেন্ট আপডেট করার জন্য ফাংশন
   const updateElement = (
     index,
     x1,
@@ -122,10 +145,11 @@ function BlackBoard() {
     elementsCopy[index] = updatedElement;
     setElements(elementsCopy);
 
-    // Save updated elements to localStorage
-    localStorage.setItem('elements', JSON.stringify(elementsCopy));
+    // আপডেট করা এলিমেন্টগুলি localStorage তে সংরক্ষণ করুন
+    localStorage.setItem("elements", JSON.stringify(elementsCopy));
   };
 
+  // এলিমেন্ট বা পয়েন্ট মুছে ফেলতে দেখুন
   const checkPresent = (clientX, clientY) => {
     if (path === undefined) return;
     var newPath = path;
@@ -141,8 +165,8 @@ function BlackBoard() {
           setPopped(true);
           setPath(newPath);
 
-          // Save updated path to localStorage
-          localStorage.setItem('path', JSON.stringify(newPath));
+          // আপডেট করা পথটি localStorage তে সংরক্ষণ করুন
+          localStorage.setItem("path", JSON.stringify(newPath));
 
           return;
         }
@@ -160,18 +184,20 @@ function BlackBoard() {
         setPopped(true);
         setElements(newElements);
 
-        // Save updated elements to localStorage
-        localStorage.setItem('elements', JSON.stringify(newElements));
+        // আপডেট করা এলিমেন্টগুলি localStorage তে সংরক্ষণ করুন
+        localStorage.setItem("elements", JSON.stringify(newElements));
       }
     });
   };
 
+  // মাউস ডাউন ইভেন্ট
   const handleMouseDown = (e) => {
     const { clientX, clientY } = e;
     const canvas = document.getElementById("canvas");
     const context = canvas.getContext("2d");
 
     if (toolType === "selection") {
+      // সিলেকশন টুল চলার সময় এলিমেন্ট চেক করুন
       const element = getElementAtPosition(clientX, clientY, elements);
       if (element) {
         const offsetX = clientX - element.x1;
@@ -186,6 +212,7 @@ function BlackBoard() {
     } else if (toolType === "eraser") {
       setAction("erasing");
 
+      // ইরেসার টুলে মুছে ফেলা এলিমেন্ট বা পয়েন্ট চেক করুন
       checkPresent(clientX, clientY);
     } else {
       const id = elements.length;
@@ -193,6 +220,7 @@ function BlackBoard() {
         setAction("sketching");
         setIsDrawing(true);
 
+        // পেন্সিল বা ব্রাশ টুলের জন্য পয়েন্ট তৈরি করুন
         const newColour = colorWidth.hex;
         const newLinewidth = width;
         const transparency = toolType === "brush" ? "0.1" : "1.0";
@@ -228,8 +256,11 @@ function BlackBoard() {
         setElements((prevState) => [...prevState, element]);
         setSelectedElement(element);
 
-        // Save updated elements to localStorage
-        localStorage.setItem('elements', JSON.stringify([...elements, element]));
+        // আপডেট করা এলিমেন্টগুলি localStorage তে সংরক্ষণ করুন
+        localStorage.setItem(
+          "elements",
+          JSON.stringify([...elements, element])
+        );
       }
     }
   };
@@ -315,27 +346,36 @@ function BlackBoard() {
 
   const handleMouseUp = () => {
     if (action === "resize") {
+      // যদি একটি এলিমেন্ট রিসাইজ হচ্ছে
       const index = selectedElement.id;
       const { id, type, strokeWidth, strokeColor } = elements[index];
+      // প্রোগ্রাম স্টেট এর আপডেট এবং লোকাল স্টোরেজে এলিমেন্ট এর তথ্য সংরক্ষণ
       const { x1, y1, x2, y2 } = adjustElementCoordinates(elements[index]);
       updateElement(id, x1, y1, x2, y2, type, strokeWidth, strokeColor);
     } else if (action === "drawing") {
+      // যদি একটি শেপ বা ফ্রি-ড্রইং হচ্ছে
       const index = selectedElement.id;
       const { id, type, strokeWidth } = elements[index];
+      // প্রোগ্রাম স্টেট এর আপডেট এবং লোকাল স্টোরেজে এলিমেন্ট এর তথ্য সংরক্ষণ
       const { x1, y1, x2, y2 } = adjustElementCoordinates(elements[index]);
       updateElement(id, x1, y1, x2, y2, type, strokeWidth, colorWidth.hex);
     } else if (action === "sketching") {
+      // যদি স্কেচিং হচ্ছে
       const canvas = document.getElementById("canvas");
       const context = canvas.getContext("2d");
       context.closePath();
+
+      // স্কেচিং এর জন্য পয়েন্টস ক্লিয়ার করা এবং স্কেচের পথ স্টেট এর আপডেট
       const element = points;
       setPoints([]);
-      setPath((prevState) => [...prevState, element]); // tuple
+      setPath((prevState) => [...prevState, element]); // টিউপল
       setIsDrawing(false);
 
-      // Save updated path to localStorage
-      localStorage.setItem('path', JSON.stringify([...path, element]));
+      // স্কেচিং এর জন্য পথ স্টেট সংরক্ষণ করা হয়েছে
+      localStorage.setItem("path", JSON.stringify([...path, element]));
     }
+
+    // অবশ্যই এক্ষেত্রে 'action' স্টেট কে "none" এ সেট করা হয়েছে
     setAction("none");
   };
 
